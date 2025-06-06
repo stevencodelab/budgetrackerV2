@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker - Personal Finance</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Icon -->
+    <link rel="icon" href="icon/icon.png"> 
+</head>
+<body>
+   <!-- Header -->
+   <header class="header">
+    <div class="container">
+        <div class="header-content">
+            <h1><i class="fas fa-wallet"></i> Budget Tracker</h1>
+            <button class="btn-download" onclick="downloadReport()">
+                <i class="fas fa-download"></i> Download Report
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+        <!-- Desktop Navigation -->
+        <nav class="desktop-nav">
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('income-section', this)">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Pemasukan</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('category-section', this)">
+                    <i class="fas fa-tags"></i>
+                    <span>Kategori</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('expense-section', this)">
+                    <i class="fas fa-minus-circle"></i>
+                    <span>Pengeluaran</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('history-section', this)">
+                    <i class="fas fa-history"></i>
+                    <span>Riwayat</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('settings-section', this)">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Dashboard Cards -->
+        <section class="dashboard">
+            <div class="card-grid">
+                <div class="dashboard-card income">
+                    <div class="card-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Total Pemasukan</h3>
+                        <p class="amount" id="totalIncome">Rp 0</p>
+                    </div>
+                </div>
+                <div class="dashboard-card budget">
+                    <div class="card-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Total Budget</h3>
+                        <p class="amount" id="totalBudget">Rp 0</p>
+                    </div>
+                </div>
+                <div class="dashboard-card expense">
+                    <div class="card-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Total Pengeluaran</h3>
+                        <p class="amount" id="totalExpense">Rp 0</p>
+                    </div>
+                </div>
+                <div class="dashboard-card remaining">
+                    <div class="card-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Sisa Dana</h3>
+                        <p class="amount" id="remainingFunds">Rp 0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <!-- Input Pemasukan -->
+            <section id="income-section" class="content-section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-plus-circle"></i> Input Pemasukan</h2>
+                </div>
+                <form id="incomeForm" class="input-form">
+                    <div class="form-group">
+                        <label for="incomeDate">Tanggal</label>
+                        <input type="date" id="incomeDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeType">Jenis Pemasukan</label>
+                        <select id="incomeType" required>
+                            <option value="">-- Pilih Jenis --</option>
+                            <option value="Gaji">Gaji</option>
+                            <option value="Bonus">Bonus</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Investasi">Investasi</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeAmount">Jumlah</label>
+                        <input type="number" id="incomeAmount" placeholder="Masukkan jumlah" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeDescription">Keterangan</label>
+                        <input type="text" id="incomeDescription" placeholder="Keterangan opsional">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Simpan Pemasukan
+                    </button>
+                </form>
+            </section>
+
+            <!-- Kategori Budget -->
+            <section id="category-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tags"></i> Kategori Budget</h2>
+                </div>
+                <form id="categoryForm" class="input-form">
+                    <div class="form-group">
+                        <label for="categoryName">Nama Kategori</label>
+                        <input type="text" id="categoryName" placeholder="Contoh: Makanan, Transport, dll" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryBudget">Alokasi Budget</label>
+                        <input type="number" id="categoryBudget" placeholder="Masukkan jumlah budget" required min="0">
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-plus"></i> Tambah Kategori
+                    </button>
+                </form>
+                
+                <div class="category-list">
+                    <h3>Daftar Kategori</h3>
+                    <div id="categoriesList" class="categories-grid"></div>
+                </div>
+            </section>
+
+            <!-- Input Pengeluaran -->
+            <section id="expense-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-minus-circle"></i> Input Pengeluaran</h2>
+                </div>
+                <form id="expenseForm" class="input-form">
+                    <div class="form-group">
+                        <label for="expenseDate">Tanggal</label>
+                        <input type="date" id="expenseDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseCategory">Kategori</label>
+                        <select id="expenseCategory" required>
+                            <option value="">-- Pilih Kategori --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseAmount">Jumlah</label>
+                        <input type="number" id="expenseAmount" placeholder="Masukkan jumlah" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseDescription">Keterangan</label>
+                        <input type="text" id="expenseDescription" placeholder="Keterangan pengeluaran" required>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Simpan Pengeluaran
+                    </button>
+                </form>
+            </section>
+
+            <!-- Riwayat -->
+            <section id="history-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Riwayat Transaksi</h2>
+                </div>
+                
+                <!-- Filter -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="filterType">Jenis</label>
+                        <select id="filterType">
+                            <option value="all">Semua</option>
+                            <option value="income">Pemasukan</option>
+                            <option value="expense">Pengeluaran</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterMonth">Bulan</label>
+                        <select id="filterMonth">
+                            <option value="">Semua Bulan</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterYear">Tahun</label>
+                        <select id="filterYear">
+                            <option value="">Semua Tahun</option>
+                        </select>
+                    </div>
+                    <button class="btn-filter" onclick="applyFilter()">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+
+                <!-- Transaction List -->
+                <div class="transaction-list">
+                    <div id="transactionsList"></div>
+                </div>
+            </section>
+
+            <!-- Pengaturan Data - SECTION BARU -->
+            <section id="settings-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> Pengaturan Data</h2>
+                </div>
+                
+                <div class="data-management">
+                    <h3>Kelola Data Anda</h3>
+                    <div class="data-buttons">
+                        <button class="btn-data btn-export" onclick="exportData()">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        
+                        <button class="btn-data btn-import" onclick="document.getElementById('importFile').click()">
+                            <i class="fas fa-upload"></i> Import Data
+                        </button>
+                        <input type="file" id="importFile" accept=".json" onchange="importData(event)">
+                        
+                        <button class="btn-data btn-backup" onclick="restoreFromBackup()">
+                            <i class="fas fa-history"></i> Pulihkan Backup
+                        </button>
+                        
+                        <button class="btn-data btn-clear" onclick="clearAllData()">
+                            <i class="fas fa-trash"></i> Hapus Semua Data
+                        </button>
+                    </div>
+                    
+                    <div class="storage-info" id="storageInfo">
+                        <h4>Informasi Penyimpanan:</h4>
+                        <p>Memuat informasi storage...</p>
+                    </div>
+                </div>
+
+                <div class="data-management">
+                    <h3>Bantuan & Informasi</h3>
+                    <div style="text-align: left; color: #666; line-height: 1.6;">
+                        <h4>Fitur LocalStorage:</h4>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Export Data:</strong> Unduh semua data ke file JSON</li>
+                            <li><strong>Import Data:</strong> Muat data dari file JSON</li>
+                            <li><strong>Auto Backup:</strong> Backup otomatis setiap 5 menit</li>
+                            <li><strong>Pulihkan Backup:</strong> Kembalikan dari backup otomatis</li>
+                            <li><strong>Hapus Data:</strong> Bersihkan semua data (tidak dapat dibatalkan)</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1rem;">Keyboard Shortcuts:</h4>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Alt + 1:</strong> Halaman Pemasukan</li>
+                            <li><strong>Alt + 2:</strong> Halaman Kategori</li>
+                            <li><strong>Alt + 3:</strong> Halaman Pengeluaran</li>
+                            <li><strong>Alt + 4:</strong> Halaman Riwayat</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+
+    <!-- Bottom Navigation - Only visible on mobile -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-content">
+            <button class="nav-item active" onclick="showSection('income-section', this)">
+                <i class="fas fa-plus-circle"></i>
+                <span>Pemasukan</span>
+            </button>
+            <button class="nav-item" onclick="showSection('category-section', this)">
+                <i class="fas fa-tags"></i>
+                <span>Kategori</span>
+            </button>
+            <button class="nav-item" onclick="showSection('expense-section', this)">
+                <i class="fas fa-minus-circle"></i>
+                <span>Pengeluaran</span>
+            </button>
+            <button class="nav-item" onclick="showSection('history-section', this)">
+                <i class="fas fa-history"></i>
+                <span>Riwayat</span>
+            </button>
+            <button class="nav-item" onclick="showSection('settings-section', this)">
+                <i class="fas fa-cog"></i>
+                <span>Pengaturan</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Demo content to show footer context -->
+    <div class="demo-content">
+        <h1>Budget Tracker Application</h1>
+        <p>Scroll down to see the footer</p>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- About Section -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-wallet"></i> Budget Tracker</h3>
+                    <p>Aplikasi manajemen keuangan personal yang membantu Anda mengelola pemasukan, pengeluaran, dan budget dengan mudah dan efisien.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/_smrsn88" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.x.com" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://www.github.com/stevencodelab" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-star"></i> Fitur Utama</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-plus-circle"></i> Pencatatan Pemasukan</a></li>
+                        <li><a href="#"><i class="fas fa-tags"></i> Manajemen Kategori</a></li>
+                        <li><a href="#"><i class="fas fa-minus-circle"></i> Tracking Pengeluaran</a></li>
+                        <li><a href="#"><i class="fas fa-chart-line"></i> Laporan Keuangan</a></li>
+                        <li><a href="#"><i class="fas fa-download"></i> Export/Import Data</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support Section -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-headset"></i> Bantuan</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                        <li><a href="#"><i class="fas fa-book"></i> Tutorial</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> Kontak Support</a></li>
+                        <li><a href="#"><i class="fas fa-bug"></i> Laporkan Bug</a></li>
+                        <li><a href="#"><i class="fas fa-lightbulb"></i> Saran Fitur</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal Section -->
+                <div class="footer-section">
+                    <h3><i class="fas fa-shield-alt"></i> Legal & Privasi</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-file-alt"></i> Syarat & Ketentuan</a></li>
+                        <li><a href="#"><i class="fas fa-user-shield"></i> Kebijakan Privasi</a></li>
+                        <li><a href="#"><i class="fas fa-cookie-bite"></i> Kebijakan Cookie</a></li>
+                        <li><a href="#"><i class="fas fa-balance-scale"></i> Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="footer-stats">
+                <div class="stat-item">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Pengguna Aktif</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1250</span>
+                    <span class="stat-label">Transaksi Tercatat</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5340</span>
+                    <span class="stat-label">Uptime</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Support</span>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <div class="copyright">
+                        <p>&copy; 2025 Budget Tracker. Made with <i class="fas fa-heart" style="color: #ff6b6b; animation: heartbeat 2s infinite;"></i> by <a href="https://www.instagram.com/_smrsn88" class="creator-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-code"></i> Stevencodelab</a> for better financial management.</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#">Beranda</a>
+                        <a href="#">Tentang</a>
+                        <a href="#">Kontak</a>
+                        <a href="#">Blog</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="assets/js/main.js"></script>
+</body> 
+</html>
