@@ -418,12 +418,24 @@ body::-webkit-scrollbar{
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 0.5rem 0;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid rgba(0, 0, 0, 0.05);
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
     display: none;
     z-index: 1000;
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
 }
 
 .bottom-nav-content {
@@ -432,7 +444,8 @@ body::-webkit-scrollbar{
     align-items: center;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 0.5rem;
+    padding: 0 20px;
+    height: 60px;
 }
 
 .nav-item {
@@ -442,36 +455,112 @@ body::-webkit-scrollbar{
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.4rem 0.2rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    color: #666;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    color: #8E8E93;
     flex: 1;
-    max-width: 20%;
-    min-width: 0;
+    max-width: 80px;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0, 122, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transform: translate(-50%, -50%);
+}
+
+.nav-item.active::before {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
 }
 
 .nav-item.active {
-    color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
+    color: #007AFF;
+    transform: scale(1.05);
+}
+
+.nav-item:not(.active):active {
+    transform: scale(0.95);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .nav-item i {
-    font-size: 1.1rem;
-    margin-bottom: 0.1rem;
+    font-size: 22px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+}
+
+.nav-item.active i {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 2px 4px rgba(0, 122, 255, 0.3));
 }
 
 .nav-item span {
-    font-size: 0.65rem;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 500;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    line-height: 1;
+    line-height: 1.2;
+    letter-spacing: -0.2px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+    opacity: 0.9;
 }
+
+.nav-item.active span {
+    font-weight: 600;
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+@keyframes haptic {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.nav-item:active {
+    animation: haptic 0.15s ease-out;
+}
+
+/* Smooth icon transitions for different states */
+.nav-item[data-section="income-section"] i { color: #34C759; }
+.nav-item[data-section="category-section"] i { color: #FF9500; }
+.nav-item[data-section="expense-section"] i { color: #FF3B30; }
+.nav-item[data-section="history-section"] i { color: #5856D6; }
+.nav-item[data-section="settings-section"] i { color: #8E8E93; }
+
+.nav-item.active[data-section="income-section"] i { color: #34C759; }
+.nav-item.active[data-section="category-section"] i { color: #FF9500; }
+.nav-item.active[data-section="expense-section"] i { color: #FF3B30; }
+.nav-item.active[data-section="history-section"] i { color: #5856D6; }
+.nav-item.active[data-section="settings-section"] i { color: #8E8E93; }
+
+/* Safari specific styles */
+@supports (-webkit-touch-callout: none) {
+    .bottom-nav {
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+}
+
 
 /* Footer Styles */
 .footer {
