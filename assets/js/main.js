@@ -1126,3 +1126,31 @@ function scrollToTop() {
         behavior: 'smooth'
     });
 }
+
+function setActive(clickedItem) {
+    // Remove active class from all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to clicked item
+    clickedItem.classList.add('active');
+    
+    // Add haptic feedback simulation
+    if (navigator.vibrate) {
+        navigator.vibrate(10);
+    }
+}
+
+// Add touch feedback for iOS devices
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('touchstart', function() {
+        this.style.transform = 'scale(0.95)';
+    });
+    
+    item.addEventListener('touchend', function() {
+        setTimeout(() => {
+            this.style.transform = '';
+        }, 100);
+    });
+});
